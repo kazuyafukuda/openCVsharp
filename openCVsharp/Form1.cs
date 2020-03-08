@@ -8,13 +8,13 @@ namespace OpenCVSharpSample
 {
     public partial class Form1 : Form
     {
-        private double w_rate;      //トリミング幅 / 顔幅
-        private double uh_rate;     //上部のトリミング高さ / 顔高さ
-        private double ratio;       //トリミングした画像の縦 / 横 比
-        private int minsize_w;      //minSizeの一辺
-        private int maxsize_w;      //maxSizeの一辺
-        private float scale_factor; //scale factor
-        private int min_neighbors;  //min neighbors
+        private double w_rate;      // トリミング幅 / 顔幅
+        private double uh_rate;     // 上部のトリミング高さ / 顔高さ
+        private double ratio;       // トリミングした画像の縦 / 横 比
+        private int minsize_w;      // minSizeの一辺
+        private int maxsize_w;      // maxSizeの一辺
+        private float scale_factor; // scale factor
+        private int min_neighbors;  // min neighbors
 
         readonly string curDir = Directory.GetCurrentDirectory();
 
@@ -158,16 +158,16 @@ namespace OpenCVSharpSample
         {
             if (double.TryParse(textBox1.Text, out double t1) & double.TryParse(textBox2.Text, out double t2) & double.TryParse(textBox3.Text, out double t3))
             {
-                int face_w = 90;    //顔幅のピクセル数
-                int form_w = 489;   //form1の幅
-                int form_h = 265;   //form1の高さ
-                int panel_w = 123;  //panel1の高さ
-                int panel_h = 210;  //panel1の最大高さ
-                int panel_x = 343;  //panel1のx座標
-                int panel_y = 6;    //panel1のy座標
-                int pic_w = 138;    //picture1の幅
-                int pic_h = 221;    //picture1の高さ
-                int gap = 75;       //picture1上端と顔上端の差
+                int face_w = 90;    // 顔幅のピクセル数
+                int form_w = 489;   // form1の幅
+                int form_h = 265;   // form1の高さ
+                int panel_w = 123;  // panel1の高さ
+                int panel_h = 210;  // panel1の最大高さ
+                int panel_x = 343;  // panel1のx座標
+                int panel_y = 6;    // panel1のy座標
+                int pic_w = 138;    // picture1の幅
+                int pic_h = 221;    // picture1の高さ
+                int gap = 75;       // picture1上端と顔上端の差
                 panel1.Size = new System.Drawing.Size((int)(face_w * t1), (int)(face_w * t1 * t3));
                 panel1.Location = new System.Drawing.Point(panel_x, panel_y);
                 pictureBox1.Size = new System.Drawing.Size((int)(face_w * t1), pic_h);
