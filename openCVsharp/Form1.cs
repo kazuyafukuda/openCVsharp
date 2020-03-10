@@ -195,5 +195,19 @@ namespace OpenCVSharpSample
             }
             return base.ProcessDialogKey(keyData);
         }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                textBox7.ReadOnly = false;
+                textBox8.ReadOnly = false;
+            }
+            else
+            {
+                textBox7.ReadOnly = true;
+                textBox8.ReadOnly = true;
+            }
+        }
     }
 }
