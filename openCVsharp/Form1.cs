@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using OpenCvSharp;
 
-namespace OpenCVSharpSample
+namespace openCVsharp
 {
     public partial class Form1 : Form
     {
@@ -194,6 +194,20 @@ namespace OpenCVSharpSample
                 return true;
             }
             return base.ProcessDialogKey(keyData);
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                textBox7.ReadOnly = false;
+                textBox8.ReadOnly = false;
+            }
+            else
+            {
+                textBox7.ReadOnly = true;
+                textBox8.ReadOnly = true;
+            }
         }
     }
 }

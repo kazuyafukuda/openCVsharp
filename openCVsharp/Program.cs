@@ -1,4 +1,4 @@
-﻿using OpenCVSharpSample;
+﻿using OpenCvSharp;
 using System;
 using System.Windows.Forms;
 
