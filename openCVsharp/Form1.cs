@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using OpenCvSharp;
 
 namespace openCVsharp
 {
@@ -16,11 +14,16 @@ namespace openCVsharp
         private float scale_factor; // scale factor
         private int min_neighbors;  // min neighbors
 
-        readonly string curDir = Directory.GetCurrentDirectory();
+        private readonly string curDir = Directory.GetCurrentDirectory();
+        private readonly Form2 form2;
 
         public Form1()
         {
             InitializeComponent();
+            form2 = new Form2
+            {
+                form1 = this
+            };
         }
 
         [Obsolete]
@@ -37,75 +40,33 @@ namespace openCVsharp
             {
                 string path = fbDialog.SelectedPath;
                 textBox5.Text = path;
-                int j = 1;
                 string[] array = Directory.GetFiles(path);
+                int array_length = array.Length;
                 Directory.CreateDirectory(path + "/成功");
 
-                try
-                {
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        string newfile = Path.Combine(path, "/", array[i]);
-                        string ext = Path.GetExtension(newfile);
-                        w_rate = double.Parse(textBox1.Text);
-                        uh_rate = double.Parse(textBox2.Text);
-                        ratio = double.Parse(textBox3.Text);
-                        minsize_w = int.Parse(textBox4.Text);
-                        maxsize_w = int.Parse(textBox6.Text);
-                        scale_factor = float.Parse(textBox7.Text);
-                        min_neighbors = int.Parse(textBox8.Text);
-                        if ((string.Compare(ext, ".jpg", true) == 0) ||
-                            (string.Compare(ext, ".png", true) == 0))
-                        {
-                            Bitmap bmpOrg = Image.FromFile(newfile) as Bitmap;
-                            int w = bmpOrg.Width;
-                            int h = bmpOrg.Height;
-                            using (Mat mat = new Mat(newfile))
-                            {
-                                // 分類機の用意
-                                using (CascadeClassifier cascade = new CascadeClassifier(curDir + @"\haarcascade_frontalface_default.xml"))
-                                {
-                                    OpenCvSharp.Size minsize = new OpenCvSharp.Size(minsize_w, minsize_w);
-                                    OpenCvSharp.Size maxsize = new OpenCvSharp.Size(maxsize_w, maxsize_w);
-                                    foreach (Rect rectFace in cascade.DetectMultiScale(mat, scale_factor, min_neighbors, 0, minsize, maxsize))
-                                    {
-                                        int px = (int)(rectFace.Width * (1 - w_rate) / 2);
-                                        int py = (int)(rectFace.Height * (1 - uh_rate) / 2);
-                                        if (rectFace.X + px < 0) { px = -rectFace.X; }
-                                        if (rectFace.Y + py < 0) { py = -rectFace.Y; }
-                                        if ((rectFace.X + px + (int)(rectFace.Width * w_rate)) > w)
-                                        { px = w - rectFace.X - (int)(rectFace.Width * w_rate); }
-                                        if ((rectFace.Y + py + (int)(rectFace.Width * w_rate * ratio)) > h)
-                                        { py = h - rectFace.Y - (int)(rectFace.Width * w_rate * ratio); }
-                                        Rect rect = new Rect(rectFace.X + px, rectFace.Y + py, (int)(rectFace.Width * w_rate), (int)(rectFace.Height * w_rate * ratio));
-                                        Mat clipedMat = mat.Clone(rect);
-                                        _ = Cv2.ImWrite(path + "/成功/" + j++.ToString() + ext, clipedMat);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    _ = MessageBox.Show((j - 1).ToString() + "個の顔を検出しました。\r\n「成功」フォルダの中にあります。\r\n但し，検出できなかったり誤検出した画像があります。\r\n後は，手作業でお願いします。", "成功", MessageBoxButtons.OK, MessageBoxIcon.None);
-                    _ = System.Diagnostics.Process.Start("EXPLORER.EXE", path);
-                        Close();
-                }
-                catch (FormatException)
-                {
-                    _ = MessageBox.Show("テキストボックスに適正な値を入力し直してください。", "注意", MessageBoxButtons.OK, MessageBoxIcon.None);
-                    fbDialog.Dispose();
-                }
-                catch (OpenCVException)
-                {
-                    _ = MessageBox.Show("OpenCVExceptionが発生しました。\r\nこの後，表示する画像フォルダ，テキストボックスの入力値を確かめてください。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    _ = System.Diagnostics.Process.Start("EXPLORER.EXE", path);
-                    Close();
-                }
-                catch (Exception)
-                {
-                    _ = MessageBox.Show("Exceptionが発生しました。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    _ = System.Diagnostics.Process.Start("EXPLORER.EXE", path);
-                    Close();
-                }
+                w_rate = double.Parse(textBox1.Text);      // トリミング幅 / 顔幅
+                uh_rate = double.Parse(textBox2.Text);     // 上部のトリミング高さ / 顔高さ
+                ratio = double.Parse(textBox3.Text);       // トリミングした画像の縦 / 横 比
+                minsize_w = int.Parse(textBox4.Text);      // minSizeの一辺
+                maxsize_w = int.Parse(textBox6.Text);      // maxSizeの一辺
+                scale_factor = float.Parse(textBox7.Text); // scale factor
+                min_neighbors = int.Parse(textBox8.Text);  // min neighbors
+
+                form2.Path_data = path;
+                form2.W_rate = w_rate;
+                form2.Uh_rate = uh_rate;
+                form2.Ratio = ratio;
+                form2.Minsize_w = minsize_w;
+                form2.Maxsize_w = maxsize_w;
+                form2.Scale_factor = scale_factor;
+                form2.Min_neighbors = min_neighbors;
+                form2.CurDir = curDir;
+                form2.FbDialog = fbDialog;
+                form2.Array = array;
+                form2.Array_Length = array_length;
+
+                form2.Show();
+
             }
             else
             {
@@ -116,29 +77,29 @@ namespace openCVsharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox1.Text = openCVsharp.Properties.Settings.Default.w_rate;
-            textBox2.Text = openCVsharp.Properties.Settings.Default.uh_rate;
-            textBox3.Text = openCVsharp.Properties.Settings.Default.ratio;
-            textBox4.Text = openCVsharp.Properties.Settings.Default.minsize_w;
-            textBox5.Text = openCVsharp.Properties.Settings.Default.Address;
-            textBox6.Text = openCVsharp.Properties.Settings.Default.maxsize_w;
-            textBox7.Text = openCVsharp.Properties.Settings.Default.scale;
-            textBox8.Text = openCVsharp.Properties.Settings.Default.minNeighbors;
+            textBox1.Text = Properties.Settings.Default.w_rate;
+            textBox2.Text = Properties.Settings.Default.uh_rate;
+            textBox3.Text = Properties.Settings.Default.ratio;
+            textBox4.Text = Properties.Settings.Default.minsize_w;
+            textBox5.Text = Properties.Settings.Default.Address;
+            textBox6.Text = Properties.Settings.Default.maxsize_w;
+            textBox7.Text = Properties.Settings.Default.scale;
+            textBox8.Text = Properties.Settings.Default.minNeighbors;
             PictureSet();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            openCVsharp.Properties.Settings.Default.w_rate = textBox1.Text;
-            openCVsharp.Properties.Settings.Default.uh_rate = textBox2.Text;
-            openCVsharp.Properties.Settings.Default.ratio = textBox3.Text;
-            openCVsharp.Properties.Settings.Default.minsize_w = textBox4.Text;
-            openCVsharp.Properties.Settings.Default.Address = textBox5.Text;
-            openCVsharp.Properties.Settings.Default.maxsize_w = textBox6.Text;
-            openCVsharp.Properties.Settings.Default.scale = textBox7.Text;
-            openCVsharp.Properties.Settings.Default.minNeighbors = textBox8.Text;
+            Properties.Settings.Default.w_rate = textBox1.Text;
+            Properties.Settings.Default.uh_rate = textBox2.Text;
+            Properties.Settings.Default.ratio = textBox3.Text;
+            Properties.Settings.Default.minsize_w = textBox4.Text;
+            Properties.Settings.Default.Address = textBox5.Text;
+            Properties.Settings.Default.maxsize_w = textBox6.Text;
+            Properties.Settings.Default.scale = textBox7.Text;
+            Properties.Settings.Default.minNeighbors = textBox8.Text;
 
-            openCVsharp.Properties.Settings.Default.Save();
+            Properties.Settings.Default.Save();
         }
 
         private void TextBox1_Leave(object sender, EventArgs e)
@@ -171,7 +132,7 @@ namespace openCVsharp
                 panel1.Size = new System.Drawing.Size((int)(face_w * t1), (int)(face_w * t1 * t3));
                 panel1.Location = new System.Drawing.Point(panel_x, panel_y);
                 pictureBox1.Size = new System.Drawing.Size((int)(face_w * t1), pic_h);
-                pictureBox1.Location = new System.Drawing.Point((int)(panel_w - pic_w)/2, (int)((face_w/2 * t2) - gap));
+                pictureBox1.Location = new System.Drawing.Point((int)(panel_w - pic_w) / 2, (int)((face_w / 2 * t2) - gap));
                 Width = panel1.Size.Width > panel_w ? form_w - panel_w + (int)(face_w * t1) : form_w;
                 Height = panel1.Size.Height > panel_h ? form_h - panel_h + (int)(face_w * t1 * t3) : form_h;
             }

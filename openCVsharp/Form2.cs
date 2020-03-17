@@ -1,23 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OpenCvSharp;
+using System;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace openCVsharp
 {
-    public partial class Form1 : Form
+    public partial class Form2 : Form
     {
-        public Form1()
+        public Form1 form1;
+        public string Path_data { set; get; }
+        public double W_rate { set; get; }
+        public double Uh_rate { set; get; }
+        public double Ratio { set; get; }
+        public int Minsize_w { set; get; }
+        public int Maxsize_w { set; get; }
+        public float Scale_factor { set; get; }
+        public int Min_neighbors { set; get; }
+        public string[] Array { set; get; }
+        public string CurDir { set; get; }
+        public FolderBrowserDialog FbDialog { set; get; }
+        public int Array_Length { set; get; }
+        public int J { set; get; }
+
+        public Form2()
         {
             InitializeComponent();
         }
 
-        private void Form2_Load(object sender, System.EventArgs e)
+        //フォームのLoadイベントハンドラ
+        private void Form1_Load(object sender, EventArgs e)
         {
             //イベントハンドラをイベントに関連付ける
             //フォームデザイナを使って関連付けを行った場合は、不要
@@ -30,34 +42,40 @@ namespace openCVsharp
         }
 
         //Button1のClickイベントハンドラ
-        private void Button1_Click(object sender, System.EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
-            //処理が行われているときは、何もしない
-            if (backgroundWorker1.IsBusy)
-                return;
+            //イベントハンドラをイベントに関連付ける
+            //フォームデザイナを使って関連付けを行った場合は、不要
+            {
+                //処理が行われているときは、何もしない
+                if (backgroundWorker1.IsBusy)
+                    return;
 
-            //Button1を無効にする
-            button1.Enabled = false;
-            //Button2を有効にする
-            button2.Enabled = true;
+                //Button1を無効にする
+                button1.Enabled = false;
+                //Button2を有効にする
+                button2.Enabled = true;
 
-            //コントロールを初期化する
-            progressBar1.Minimum = 0;
-            progressBar1.Maximum = 10;
-            progressBar1.Value = 0;
-            label1.Text = "0";
+                //コントロールを初期化する
+                progressBar1.Minimum = 0;
+                progressBar1.Maximum = Array_Length;
+                progressBar1.Value = 0;
+                label1.Text = "0";
 
-            //BackgroundWorkerのProgressChangedイベントが発生するようにする
-            backgroundWorker1.WorkerReportsProgress = true;
-            //キャンセルできるようにする
-            backgroundWorker1.WorkerSupportsCancellation = true;
-            //DoWorkで取得できるパラメータ(10)を指定して、処理を開始する
-            //パラメータが必要なければ省略できる
-            backgroundWorker1.RunWorkerAsync(10);
+                //BackgroundWorkerのProgressChangedイベントが発生するようにする
+                backgroundWorker1.WorkerReportsProgress = true;
+                //キャンセルできるようにする
+                backgroundWorker1.WorkerSupportsCancellation = true;
+                //DoWorkで取得できるパラメータ(10)を指定して、処理を開始する
+                //パラメータが必要なければ省略できる
+                backgroundWorker1.RunWorkerAsync(Array_Length);
+
+            }
         }
 
-        //button2のClickイベントハンドラ
-        private void Button2_Click(object sender, System.EventArgs e)
+
+        //Button2のClickイベントハンドラ
+        public void Button2_Click(object sender, EventArgs e)
         {
             //Button2を無効にする
             button2.Enabled = false;
@@ -68,16 +86,16 @@ namespace openCVsharp
 
         //BackgroundWorker1のDoWorkイベントハンドラ
         //ここで時間のかかる処理を行う
-        private void BackgroundWorker1_DoWork(
-            object sender, DoWorkEventArgs e)
+        private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker bgWorker = (BackgroundWorker)sender;
 
             //パラメータを取得する
             int maxLoops = (int)e.Argument;
+            int j = 1;
 
             //時間のかかる処理を開始する
-            for (int i = 1; i <= maxLoops; i++)
+            for (int i = 0; i < maxLoops; i++)
             {
                 //キャンセルされたか調べる
                 if (bgWorker.CancellationPending)
@@ -86,15 +104,48 @@ namespace openCVsharp
                     e.Cancel = true;
                     return;
                 }
-
-                //1秒間待機する（時間のかかる処理があるものとする）
-                System.Threading.Thread.Sleep(1000);
-
-                //ProgressChangedイベントハンドラを呼び出し、
-                //コントロールの表示を変更する
-                bgWorker.ReportProgress(i);
+                string newfile = System.IO.Path.Combine(Path_data, "/", Array[i]);
+                string ext = System.IO.Path.GetExtension(newfile);
+                W_rate = W_rate;
+                Uh_rate = Uh_rate;
+                Ratio = Ratio;
+                Minsize_w = Minsize_w;
+                Maxsize_w = Maxsize_w;
+                Scale_factor = Scale_factor;
+                Min_neighbors = Min_neighbors;
+                if ((string.Compare(ext, ".jpg", true) == 0) ||
+                    (string.Compare(ext, ".png", true) == 0))
+                {
+                    Bitmap bmpOrg = Image.FromFile(newfile) as Bitmap;
+                    int w = bmpOrg.Width;
+                    int h = bmpOrg.Height;
+                    using (Mat mat = new Mat(newfile))
+                    {
+                        // 分類機の用意
+                        using (CascadeClassifier cascade = new CascadeClassifier(CurDir + @"\haarcascade_frontalface_default.xml"))
+                        {
+                            OpenCvSharp.Size minsize = new OpenCvSharp.Size(Minsize_w, Minsize_w);
+                            OpenCvSharp.Size maxsize = new OpenCvSharp.Size(Maxsize_w, Maxsize_w);
+                            foreach (Rect rectFace in cascade.DetectMultiScale(mat, Scale_factor, Min_neighbors, 0, minsize, maxsize))
+                            {
+                                int px = (int)(rectFace.Width * (1 - W_rate) / 2);
+                                int py = (int)(rectFace.Height * (1 - Uh_rate) / 2);
+                                if (rectFace.X + px < 0) { px = -rectFace.X; }
+                                if (rectFace.Y + py < 0) { py = -rectFace.Y; }
+                                if ((rectFace.X + px + (int)(rectFace.Width * W_rate)) > w)
+                                { px = w - rectFace.X - (int)(rectFace.Width * W_rate); }
+                                if ((rectFace.Y + py + (int)(rectFace.Width * W_rate * Ratio)) > h)
+                                { py = h - rectFace.Y - (int)(rectFace.Width * W_rate * Ratio); }
+                                Rect rect = new Rect(rectFace.X + px, rectFace.Y + py, (int)(rectFace.Width * W_rate), (int)(rectFace.Height * W_rate * Ratio));
+                                Mat clipedMat = mat.Clone(rect);
+                                _ = Cv2.ImWrite(Path_data + "/成功/" + j++.ToString() + ext, clipedMat);
+                                J = j;
+                            }
+                        }
+                    }
+                }
+                bgWorker.ReportProgress(i + 1);
             }
-
             //ProgressChangedで取得できる結果を設定する
             //結果が必要なければ省略できる
             e.Result = maxLoops;
@@ -119,25 +170,22 @@ namespace openCVsharp
             if (e.Error != null)
             {
                 //エラーが発生したとき
-                label1.Text = "エラー:" + e.Error.Message;
+                _ = MessageBox.Show("エラー:" + e.Error.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else if (e.Cancelled)
             {
                 //キャンセルされたとき
-                label1.Text = "キャンセルされました。";
+                _ = MessageBox.Show("キャンセルされました。", "キャンセル", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 //正常に終了したとき
-                //結果を取得する
                 int result = (int)e.Result;
-                label1.Text = result.ToString() + "回で完了しました。";
+                _ = MessageBox.Show(result.ToString() + "つの画像ファイルから" + (J - 1).ToString() + "個の顔を検出しました。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-
-            //Button1を有効に戻す
-            button1.Enabled = true;
-            //Button2を無効に戻す
-            button2.Enabled = false;
+            Close();
+            form1.Close();
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", Path_data);
         }
     }
 }
