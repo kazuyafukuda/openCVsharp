@@ -1,8 +1,8 @@
-﻿using OpenCvSharp;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using OpenCvSharp;
 
 namespace openCVsharp
 {
@@ -28,33 +28,16 @@ namespace openCVsharp
             InitializeComponent();
         }
 
-        //フォームのLoadイベントハンドラ
+        ////フォームのLoadイベントハンドラ
         private void Form1_Load(object sender, EventArgs e)
         {
-            //イベントハンドラをイベントに関連付ける
-            //フォームデザイナを使って関連付けを行った場合は、不要
-            backgroundWorker1.DoWork +=
-                new DoWorkEventHandler(BackgroundWorker1_DoWork);
-            backgroundWorker1.ProgressChanged +=
-                new ProgressChangedEventHandler(BackgroundWorker1_ProgressChanged);
-            backgroundWorker1.RunWorkerCompleted +=
-                new RunWorkerCompletedEventHandler(BackgroundWorker1_RunWorkerCompleted);
-        }
-
-        //Button1のClickイベントハンドラ
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            //イベントハンドラをイベントに関連付ける
-            //フォームデザイナを使って関連付けを行った場合は、不要
             {
                 //処理が行われているときは、何もしない
                 if (backgroundWorker1.IsBusy)
                     return;
 
-                //Button1を無効にする
-                button1.Enabled = false;
                 //Button2を有効にする
-                button2.Enabled = true;
+                button1.Enabled = true;
 
                 //コントロールを初期化する
                 progressBar1.Minimum = 0;
@@ -66,19 +49,18 @@ namespace openCVsharp
                 backgroundWorker1.WorkerReportsProgress = true;
                 //キャンセルできるようにする
                 backgroundWorker1.WorkerSupportsCancellation = true;
-                //DoWorkで取得できるパラメータ(10)を指定して、処理を開始する
-                //パラメータが必要なければ省略できる
+                //DoWorkで取得できるパラメータ(Array_Length)を指定して、処理を開始する
                 backgroundWorker1.RunWorkerAsync(Array_Length);
 
             }
         }
 
 
-        //Button2のClickイベントハンドラ
-        public void Button2_Click(object sender, EventArgs e)
+        //Button1のClickイベントハンドラ
+        public void Button1_Click(object sender, EventArgs e)
         {
-            //Button2を無効にする
-            button2.Enabled = false;
+            //Button1を無効にする
+            button1.Enabled = false;
 
             //キャンセルする
             backgroundWorker1.CancelAsync();
@@ -147,7 +129,6 @@ namespace openCVsharp
                 bgWorker.ReportProgress(i + 1);
             }
             //ProgressChangedで取得できる結果を設定する
-            //結果が必要なければ省略できる
             e.Result = maxLoops;
         }
 
@@ -159,7 +140,7 @@ namespace openCVsharp
             //ProgressBar1の値を変更する
             progressBar1.Value = e.ProgressPercentage;
             //Label1のテキストを変更する
-            label1.Text = e.ProgressPercentage.ToString();
+            label1.Text = e.ProgressPercentage.ToString() + "つ目の画像ファイルを処理";
         }
 
         //BackgroundWorker1のRunWorkerCompletedイベントハンドラ
