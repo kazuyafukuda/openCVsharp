@@ -110,17 +110,53 @@ namespace openCVsharp
                             OpenCvSharp.Size maxsize = new OpenCvSharp.Size(Maxsize_w, Maxsize_w);
                             foreach (Rect rectFace in cascade.DetectMultiScale(mat, Scale_factor, Min_neighbors, 0, minsize, maxsize))
                             {
-                                int px = (int)(rectFace.Width * (1 - W_rate) / 2);
-                                int py = (int)(rectFace.Height * (1 - Uh_rate) / 2);
-                                if (rectFace.X + px < 0) { px = -rectFace.X; }
-                                if (rectFace.Y + py < 0) { py = -rectFace.Y; }
-                                if ((rectFace.X + px + (int)(rectFace.Width * W_rate)) > w)
-                                { px = w - rectFace.X - (int)(rectFace.Width * W_rate); }
-                                if ((rectFace.Y + py + (int)(rectFace.Width * W_rate * Ratio)) > h)
-                                { py = h - rectFace.Y - (int)(rectFace.Width * W_rate * Ratio); }
-                                Rect rect = new Rect(rectFace.X + px, rectFace.Y + py, (int)(rectFace.Width * W_rate), (int)(rectFace.Height * W_rate * Ratio));
+                                int trimedWidth = (int)(rectFace.Width * W_rate);
+                                int trimedHeight = (int)(trimedWidth * Ratio);
+                                int partOftrimedHeight = (int)(rectFace.Height * Uh_rate);
+                                int dx = (rectFace.Width - trimedWidth) / 2;
+                                int dy = (rectFace.Height - partOftrimedHeight) / 2;
+                                string err = "";
+
+                                // 認識した顔の右余白が足りない
+                                if ((rectFace.X + dx + trimedWidth) > w)
+                                {
+                                    dx = w - rectFace.X - trimedWidth;
+                                    err += "_右";
+                                }
+                                // 認識した顔の左余白が足りない
+                                if (rectFace.X + dx < 0)
+                                {
+                                    dx = -rectFace.X;
+                                    err += "_左";
+                                }
+                                // 認識した顔の下余白が足りない
+                                if ((rectFace.Y + dy + (int)(trimedWidth * Ratio)) > h)
+                                {
+                                    dy = h - rectFace.Y - (int)(trimedWidth * Ratio);
+                                    err += "_下";
+                                }
+                                // 認識した顔の上余白が足りない
+                                if (rectFace.Y + dy < 0)
+                                {
+                                    dy = -rectFace.Y;
+                                    err += "_上";
+                                }
+                                // 設定通りの顔幅の比率にできない
+                                if (trimedWidth > w)
+                                {
+                                    //dx = 0;
+                                    trimedWidth = w;
+                                    err += "_幅";
+                                }
+                                // 設定通りの縦横比にできない
+                                if (trimedHeight > h)
+                                {
+                                    trimedHeight = h;
+                                    err += "_比";
+                                }
+                                Rect rect = new Rect(rectFace.X + dx, rectFace.Y + dy, trimedWidth, trimedHeight);
                                 Mat clipedMat = mat.Clone(rect);
-                                _ = Cv2.ImWrite(Path_data + "/成功/" + j++.ToString() + ext, clipedMat);
+                                _ = Cv2.ImWrite(Path_data + "/成功/" + j++.ToString() + err + ext, clipedMat);
                                 J = j;
                             }
                         }
