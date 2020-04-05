@@ -206,17 +206,17 @@
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(343, 6);
+            this.panel1.Location = new System.Drawing.Point(353, 6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(123, 123);
+            this.panel1.Size = new System.Drawing.Size(108, 213);
             this.panel1.TabIndex = 17;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::openCVsharp.Properties.Resources.boy1;
-            this.pictureBox1.Location = new System.Drawing.Point(-8, 0);
+            this.pictureBox1.Image = global::openCVsharp.Properties.Resources.man;
+            this.pictureBox1.Location = new System.Drawing.Point(-46, 7);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(138, 202);
+            this.pictureBox1.Size = new System.Drawing.Size(213, 605);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -236,7 +236,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(473, 226);
+            this.ClientSize = new System.Drawing.Size(466, 226);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label7);

@@ -119,22 +119,21 @@ namespace openCVsharp
         {
             if (double.TryParse(textBox1.Text, out double t1) & double.TryParse(textBox2.Text, out double t2) & double.TryParse(textBox3.Text, out double t3))
             {
-                int face_w = 90;    // 顔幅のピクセル数
-                int form_w = 489;   // form1の幅
+                int face_w = 60;    // 顔幅のピクセル数
+                int form_w = 482;   // form1の幅
                 int form_h = 265;   // form1の高さ
-                int panel_w = 123;  // panel1の高さ
-                int panel_h = 210;  // panel1の最大高さ
-                int panel_x = 343;  // panel1のx座標
+                int panel_w = 213;  // panel1の幅 ← 画像の幅と同じにする
+                int panel_x = 350;  // panel1のx座標
                 int panel_y = 6;    // panel1のy座標
-                int pic_w = 138;    // picture1の幅
-                int pic_h = 221;    // picture1の高さ
-                int gap = 75;       // picture1上端と顔上端の差
+                int pic_w = 213;    // picture1の幅 
+                int pic_h = 605;    // picture1の高さ
+                int gap = 70;       // picture1上端と顔上端の差
                 panel1.Size = new System.Drawing.Size((int)(face_w * t1), (int)(face_w * t1 * t3));
                 panel1.Location = new System.Drawing.Point(panel_x, panel_y);
                 pictureBox1.Size = new System.Drawing.Size((int)(face_w * t1), pic_h);
-                pictureBox1.Location = new System.Drawing.Point((int)(panel_w - pic_w) / 2, (int)((face_w / 2 * t2) - gap));
-                Width = panel1.Size.Width > panel_w ? form_w - panel_w + (int)(face_w * t1) : form_w;
-                Height = panel1.Size.Height > panel_h ? form_h - panel_h + (int)(face_w * t1 * t3) : form_h;
+                pictureBox1.Location = new System.Drawing.Point((panel_w - pic_w) / 2, (int)((face_w / 2 * t2) - gap));
+                Width = panel1.Size.Width > 108 ? form_w - 108 + (int)(face_w * t1) : form_w;
+                Height = panel1.Size.Height > 213 ? form_h - 213 + (int)(face_w * t1 * t3) : form_h;
             }
         }
 
@@ -170,5 +169,6 @@ namespace openCVsharp
                 textBox8.ReadOnly = true;
             }
         }
+
     }
 }
