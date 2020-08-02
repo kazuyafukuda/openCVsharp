@@ -208,13 +208,13 @@
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(353, 6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(108, 213);
+            this.panel1.Size = new System.Drawing.Size(108, 108);
             this.panel1.TabIndex = 17;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::openCVsharp.Properties.Resources.man;
-            this.pictureBox1.Location = new System.Drawing.Point(-46, 7);
+            this.pictureBox1.Location = new System.Drawing.Point(-48, -2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(213, 605);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;

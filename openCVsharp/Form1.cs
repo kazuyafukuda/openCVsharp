@@ -43,6 +43,7 @@ namespace openCVsharp
                 string[] array = Directory.GetFiles(path);
                 int array_length = array.Length;
                 Directory.CreateDirectory(path + "/成功");
+                Directory.CreateDirectory(path + "/失敗");
 
                 w_rate = double.Parse(textBox1.Text);      // トリミング幅 / 顔幅
                 uh_rate = double.Parse(textBox2.Text);     // 上部のトリミング高さ / 顔高さ

@@ -22,6 +22,7 @@ namespace openCVsharp
         public FolderBrowserDialog FbDialog { set; get; }
         public int Array_Length { set; get; }
         public int J { set; get; }
+        private string judge;
 
         public Form2()
         {
@@ -116,30 +117,35 @@ namespace openCVsharp
                                 int dx = (rectFace.Width - trimedWidth) / 2;
                                 int dy = (rectFace.Height - partOftrimedHeight) / 2;
                                 string err = "";
+                                judge = "成功";
 
                                 // 認識した顔の右余白が足りない
                                 if ((rectFace.X + dx + trimedWidth) > w)
                                 {
                                     dx = w - rectFace.X - trimedWidth;
                                     err += "_右";
+                                    judge = "失敗";
                                 }
                                 // 認識した顔の左余白が足りない
                                 if (rectFace.X + dx < 0)
                                 {
                                     dx = -rectFace.X;
                                     err += "_左";
+                                    judge = "失敗";
                                 }
                                 // 認識した顔の下余白が足りない
                                 if ((rectFace.Y + dy + (int)(trimedWidth * Ratio)) > h)
                                 {
                                     dy = h - rectFace.Y - (int)(trimedWidth * Ratio);
                                     err += "_下";
+                                    judge = "失敗";
                                 }
                                 // 認識した顔の上余白が足りない
                                 if (rectFace.Y + dy < 0)
                                 {
                                     dy = -rectFace.Y;
                                     err += "_上";
+                                    judge = "失敗";
                                 }
                                 // 設定通りの顔幅の比率にできない
                                 if (trimedWidth > w)
@@ -147,16 +153,19 @@ namespace openCVsharp
                                     //dx = 0;
                                     trimedWidth = w;
                                     err += "_幅";
+                                    judge = "失敗";
                                 }
                                 // 設定通りの縦横比にできない
                                 if (trimedHeight > h)
                                 {
                                     trimedHeight = h;
                                     err += "_比";
+                                    judge = "失敗";
                                 }
                                 Rect rect = new Rect(rectFace.X + dx, rectFace.Y + dy, trimedWidth, trimedHeight);
                                 Mat clipedMat = mat.Clone(rect);
-                                _ = Cv2.ImWrite(Path_data + "/成功/" + j++.ToString() + err + ext, clipedMat);
+                                _ = Cv2.ImWrite(Path_data + "/" + judge + "/" + j++.ToString("D2") + err + ext, clipedMat);
+                                clipedMat.Dispose();
                                 J = j;
                             }
                         }
